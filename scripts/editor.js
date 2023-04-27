@@ -90,13 +90,13 @@ function drawCells(cells) {
     }
 }
 
-function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, initialCells=null) {
+function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, initialCells=null, cursorColor=null) {
     let showText = true;
     let cells = initialCells === null ? createCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize) : initialCells;
 
     const numericKeys = "1234567890".split("");
     const colors = [RED, GREEN, BLUE, YELLOW, MAGENTA, CYAN, rgb(154, 79, 52), rgb(179, 26, 255), rgb(128, 128, 128), BLACK];
-    let selectedColor = BLACK;
+    let selectedColor = cursorColor === null ? BLACK : cursorColor;
 
     const getColorFromKey = (key) => {
         const index = numericKeys.findIndex(value => value === key);
@@ -111,7 +111,7 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
         } else if (isKeyPressed("e")) {
             cells = createCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize);
         } else if (isKeyPressed("enter")) {
-            go("game", numberOfHorizontalLines, numberOfVerticalLines, cells);
+            go("game", numberOfHorizontalLines, numberOfVerticalLines, cells, selectedColor);
         }
 
         for (const key of numericKeys) {

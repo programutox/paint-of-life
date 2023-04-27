@@ -51,7 +51,7 @@ function getNextGenerationAlive(cells) {
     return nextGenerationAlive;
 }
 
-function gameScene(numberOfHorizontalLines, numberOfVerticalLines, cells) {
+function gameScene(numberOfHorizontalLines, numberOfVerticalLines, cells, cursorColor) {
     const initialCells = structuredClone(cells);
 
     const timeStep = 0.15;
@@ -62,7 +62,7 @@ function gameScene(numberOfHorizontalLines, numberOfVerticalLines, cells) {
 
     onUpdate(() => {
         if (isKeyPressed("escape")) {
-            go("editor", numberOfHorizontalLines, numberOfVerticalLines, cellSize, initialCells);
+            go("editor", numberOfHorizontalLines, numberOfVerticalLines, cellSize, initialCells, cursorColor);
         }
 
         if (time() - elapsedTime < timeStep) {
@@ -90,9 +90,9 @@ function gameScene(numberOfHorizontalLines, numberOfVerticalLines, cells) {
         drawSprite({
             sprite: "cursor",
             pos: mousePos(),
-            color: BLACK,
+            color: cursorColor,
             scale: 1 / 8,
-        })
+        });
 
         drawText({
             text: step.toString(),
