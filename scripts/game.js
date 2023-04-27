@@ -1,7 +1,9 @@
-function countAliveNeighbors(cells, x, y) {
+function countAliveNeighborsWithLastColor(cells, x, y) {
     const between = (left, a, right) => left <= a && a < right;
 
     let count = 0;
+    let lastColor = BLACK;
+
     for (let i = -1; i <= 1; ++i) {
         for (let j = -1; j <= 1; ++j) {
             if (i === 0 && j === 0) {
@@ -13,11 +15,14 @@ function countAliveNeighbors(cells, x, y) {
 
             if (between(0, neighborX, cells.length) && between(0, neighborY, cells[0].length) && cells[neighborX][neighborY].alive) {
                 ++count;
+
+                const neighbor = cells[neighborX][neighborY];
+                lastColor = rgb(neighbor.r, neighbor.g, neighbor.b);
             }
         }
     }
 
-    return count;
+    return [count, lastColor];
 }
 
 function getNextGenerationAlive(cells) {
@@ -26,11 +31,14 @@ function getNextGenerationAlive(cells) {
     for (let x = 0; x < cells.length; ++x) {
         let row = [];
         for (let y = 0; y < cells[x].length; ++y) {
-            const numberOfAliveNeighbors = countAliveNeighbors(cells, x, y);
+            const [numberOfAliveNeighbors, color] = countAliveNeighborsWithLastColor(cells, x, y);
             const isAlive = cells[x][y].alive;
 
             if (!isAlive && numberOfAliveNeighbors === 3) {
                 row.push(true);
+                cells[x][y].r = color.r;
+                cells[x][y].g = color.g;
+                cells[x][y].b = color.b;
             } else if (isAlive && (numberOfAliveNeighbors < 2 || numberOfAliveNeighbors > 3)) {
                 row.push(false);
             } else {

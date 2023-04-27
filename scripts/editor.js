@@ -4,11 +4,15 @@ function createCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize) {
     for (let i = 0; i <= numberOfVerticalLines; ++i) {
         let row = [];
         for (let j = 0; j <= numberOfHorizontalLines; ++j) {
+            // vec2 and rgb functions cannot be used. Because of serialization, structured behaves strangely.
             row.push({
                 alive: false,
                 x: i * (cellSize + 1) - 1,
                 y: j * (cellSize + 1),
                 size: cellSize,
+                r: 0,
+                g: 0,
+                b: 0
             });
         }
         cells.push(row);
@@ -17,8 +21,9 @@ function createCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize) {
     return cells;
 }
 
-function updateCells(cells) {
+function updateCells(cells, selectedColor) {
     const cellRect = cell => new Rect(vec2(cell.x, cell.y), cell.size, cell.size);
+    const colorsEqual = (c1, c2) => c1.r === c2.r && c1.g === c2.g && c1.b === c2.b;
 
     for (let row of cells) {
         const cell = row.find(value => testRectPoint(cellRect(value), mousePos()));
@@ -27,7 +32,12 @@ function updateCells(cells) {
             continue;
         }
 
-        if (isMouseDown("left") && !cell.alive) {
+        const cellColor = rgb(cell.r, cell.g, cell.b);
+
+        if (isMouseDown("left") && !(cell.alive && colorsEqual(cellColor, selectedColor))) {
+            cell.r = selectedColor.r;
+            cell.g = selectedColor.g;
+            cell.b = selectedColor.b;
             cell.alive = true;
         } else if (isMouseDown("right") && cell.alive) {
             cell.alive = false;
@@ -71,7 +81,7 @@ function drawCells(cells) {
         width: cell.size,
         height: cell.size,
         pos: vec2(cell.x, cell.y),
-        color: BLACK,
+        color: rgb(cell.r, cell.g, cell.b),
     });
     
     for (const row of cells) {
@@ -84,6 +94,15 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
     let showText = true;
     let cells = initialCells === null ? createCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize) : initialCells;
 
+    const numericKeys = "1234567890".split("");
+    const colors = [RED, GREEN, BLUE, YELLOW, MAGENTA, CYAN, rgb(154, 79, 52), rgb(179, 26, 255), rgb(128, 128, 128), BLACK];
+    let selectedColor = BLACK;
+
+    const getColorFromKey = (key) => {
+        const index = numericKeys.findIndex(value => value === key);
+        return colors[index];
+    };
+
     onUpdate(() => {
         if (isKeyPressed("space")) {
             showText = !showText;
@@ -93,7 +112,13 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
             go("game", numberOfHorizontalLines, numberOfVerticalLines, cells);
         }
 
-        updateCells(cells);
+        for (const key of numericKeys) {
+            if (isKeyPressed(key)) {
+                selectedColor = getColorFromKey(key);
+            }
+        }
+
+        updateCells(cells, selectedColor);
     });
 
     const instructions = [
@@ -103,6 +128,7 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
         "Press Enter to start the game",
         "Press Escape in game to go back to editor",
         "Press Space to hide the texts",
+        "Press a numeric key to change next cells color",
     ];
 
     const instruction_size = 20;
