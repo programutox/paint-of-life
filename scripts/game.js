@@ -87,6 +87,13 @@ function gameScene(numberOfHorizontalLines, numberOfVerticalLines, cells) {
 
         drawCells(cells);
 
+        drawSprite({
+            sprite: "cursor",
+            pos: mousePos(),
+            color: BLACK,
+            scale: 1 / 8,
+        })
+
         drawText({
             text: step.toString(),
             size: 20,
