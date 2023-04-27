@@ -7,7 +7,10 @@ function main() {
         width: cellSize * (numberOfVerticalLines + 1) + numberOfVerticalLines,
         height: cellSize * (numberOfHorizontalLines + 1) + numberOfHorizontalLines,
         background: [245, 245, 245],
+        debug: false,
     });
+
+    loadSprite("cursor", "./assets/cursor.png");
 
     scene("editor", editorScene);
     scene("game", gameScene);

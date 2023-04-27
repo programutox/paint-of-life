@@ -104,6 +104,8 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
     };
 
     onUpdate(() => {
+        setCursor("none");
+
         if (isKeyPressed("space")) {
             showText = !showText;
         } else if (isKeyPressed("e")) {
@@ -138,6 +140,13 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
         drawVerticalLines(numberOfVerticalLines, cellSize);
 
         drawCells(cells);
+
+        drawSprite({
+            sprite: "cursor",
+            pos: mousePos(),
+            color: selectedColor,
+            scale: 1 / 8,
+        })
 
         if (!showText) {
             return;
