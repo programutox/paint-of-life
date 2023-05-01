@@ -10,7 +10,8 @@ function main() {
         debug: false,
     });
 
-    loadSprite("cursor", "./assets/cursor.png");
+    const tags = ["color", "cursor", "erase", "mode", "start", "text"];
+    tags.forEach(tag => loadSprite(tag, `./assets/${tag}.png`));
 
     scene("editor", editorScene);
     scene("game", gameScene);

@@ -1,10 +1,39 @@
-function createCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize) {
+function getButtonsInfo() {
+    const tags = ["text", /*"mode",*/ "erase", "color", "start"];
+
+    const createInfo = (tag, i) => {
+        const size = 32;
+        const pos = vec2(10, 10 + (size + 5) * i);
+        return {
+            tag,
+            pos,
+            rect: new Rect(pos, size, size), 
+        }
+    };
+
+    return tags.map(createInfo);
+}
+
+function getInstructionsTexts() {
+    return [
+        "Hold left click to add cells",
+        "Hold right click to remove cells",
+        "Press E to erase all the cells",
+        "Press Enter to start the game",
+        "Press Escape in game to go back to editor",
+        "Press Space to hide the texts",
+        "Press a numeric key to change next cells color",
+    ];
+}
+
+function initializeCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize) {
     let cells = [];
 
     for (let i = 0; i <= numberOfVerticalLines; ++i) {
         let row = [];
         for (let j = 0; j <= numberOfHorizontalLines; ++j) {
-            // vec2 and rgb functions cannot be used. Because of serialization, structured behaves strangely.
+            // vec2 and rgb functions cannot be used. 
+            // Because of serialization, structured behaves strangely.
             row.push({
                 alive: false,
                 x: i * (cellSize + 1) - 1,
@@ -21,9 +50,12 @@ function createCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize) {
     return cells;
 }
 
+function areColorsEqual(color1, color2) {
+    return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b;
+}
+
 function updateCells(cells, selectedColor) {
     const cellRect = cell => new Rect(vec2(cell.x, cell.y), cell.size, cell.size);
-    const colorsEqual = (c1, c2) => c1.r === c2.r && c1.g === c2.g && c1.b === c2.b;
 
     for (let row of cells) {
         const cell = row.find(value => testRectPoint(cellRect(value), mousePos()));
@@ -34,7 +66,7 @@ function updateCells(cells, selectedColor) {
 
         const cellColor = rgb(cell.r, cell.g, cell.b);
 
-        if (isMouseDown("left") && !(cell.alive && colorsEqual(cellColor, selectedColor))) {
+        if (isMouseDown("left") && !(cell.alive && areColorsEqual(cellColor, selectedColor))) {
             cell.r = selectedColor.r;
             cell.g = selectedColor.g;
             cell.b = selectedColor.b;
@@ -91,49 +123,103 @@ function drawCells(cells) {
 }
 
 function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, initialCells=null, cursorColor=null) {
-    let showText = true;
-    let cells = initialCells === null ? createCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize) : initialCells;
+    let showInfo = true;
+    let cells = initialCells === null ? initializeCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize) : initialCells;
 
     const numericKeys = "1234567890".split("");
     const colors = [RED, GREEN, BLUE, YELLOW, MAGENTA, CYAN, rgb(154, 79, 52), rgb(179, 26, 255), rgb(128, 128, 128), BLACK];
     let selectedColor = cursorColor === null ? BLACK : cursorColor;
 
-    const getColorFromKey = (key) => {
-        const index = numericKeys.findIndex(value => value === key);
-        return colors[index];
+    const launchGame = () => go("game", numberOfHorizontalLines, numberOfVerticalLines, cells, selectedColor);
+
+    const updateKeys = () => {
+        if (isKeyPressed("space")) {
+            showInfo = !showInfo;
+        } else if (isKeyPressed("e")) {
+            cells = initializeCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize);
+        } else if (isKeyPressed("enter")) {
+            launchGame();
+        }
     };
+
+    const updateCursorColor = () => {
+        const keyPressedIndex = numericKeys.findIndex(key => isKeyPressed(key));
+        if (keyPressedIndex !== -1) {
+            selectedColor = colors[keyPressedIndex];
+        }
+    }
 
     onUpdate(() => {
         setCursor("none");
 
-        if (isKeyPressed("space")) {
-            showText = !showText;
-        } else if (isKeyPressed("e")) {
-            cells = createCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize);
-        } else if (isKeyPressed("enter")) {
-            go("game", numberOfHorizontalLines, numberOfVerticalLines, cells, selectedColor);
+        if (!isTouchScreen()) {
+            updateKeys();
+            updateCursorColor();
+            updateCells(cells, selectedColor);
+            return;
         }
 
-        for (const key of numericKeys) {
-            if (isKeyPressed(key)) {
-                selectedColor = getColorFromKey(key);
+        const buttonsToCheck = showInfo ? instructions.buttonsInfo : [instructions.buttonsInfo[0]];
+
+        const button = buttonsToCheck.find(
+            buttonInfo => testRectPoint(buttonInfo.rect, mousePos()) && isMousePressed()
+        );
+        
+        if (button !== undefined) {
+            console.log(`a button has been pressed: ${button.tag}`);
+            switch (button.tag) {
+                case "text":
+                    showInfo = !showInfo;
+                    break;
+                
+                case "erase":
+                    cells = initializeCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize);
+                    break;
+                
+                case "color":
+                    let index = colors.findIndex(color => areColorsEqual(color, selectedColor));
+                    index = index === colors.length - 1 ? 0 : index + 1;
+                    selectedColor = colors[index];
+                    break;
+                
+                case "start":
+                    launchGame();
+                    break;
+            
+                default:
+                    throw RangeError(`The button tag "${button.tag}" is not handled.`);
             }
+            return;
         }
 
+        updateCursorColor();
         updateCells(cells, selectedColor);
     });
 
-    const instructions = [
-        "Hold left click to add cells",
-        "Hold right click to remove cells",
-        "Press E to erase all the cells",
-        "Press Enter to start the game",
-        "Press Escape in game to go back to editor",
-        "Press Space to hide the texts",
-        "Press a numeric key to change next cells color",
-    ];
+    const instructions = {};
+    if (isTouchScreen()) {
+        instructions["buttonsInfo"] = getButtonsInfo();
+    } else {
+        instructions["texts"] = getInstructionsTexts();
+    }
 
     const instruction_size = 20;
+    const drawCursor = () => { 
+        if (!isTouchScreen()) { 
+            drawSprite({
+                sprite: "cursor",
+                pos: mousePos(),
+                color: selectedColor,
+                scale: 1 / 8,
+            });
+        }
+    };
+
+    const drawButton = (buttonInfo) => drawSprite({
+        sprite: buttonInfo.tag,
+        pos: buttonInfo.pos,
+        scale: 2,
+    });
 
     onDraw(() => {
         drawHorizontalLines(numberOfHorizontalLines, cellSize);
@@ -141,18 +227,21 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
 
         drawCells(cells);
 
-        drawSprite({
-            sprite: "cursor",
-            pos: mousePos(),
-            color: selectedColor,
-            scale: 1 / 8,
-        })
-
-        if (!showText) {
+        if (!showInfo) {
+            if (isTouchScreen()) {
+                const buttonInfo = instructions.buttonsInfo[0];
+                drawButton(buttonInfo)
+            }
+            drawCursor();
             return;
         }
 
-        instructions.forEach((value, i) => {
+        if (isTouchScreen()) {
+            instructions.buttonsInfo.forEach(drawButton);
+            return;
+        }
+
+        instructions.texts.forEach((value, i) => {
             drawText({
                 text: value,
                 size: instruction_size,
@@ -160,5 +249,7 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
                 color: BLACK,
             });
         });
+
+        drawCursor();
     });
 }
