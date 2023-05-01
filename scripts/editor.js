@@ -238,6 +238,13 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
 
         if (isTouchScreen()) {
             instructions.buttonsInfo.forEach(drawButton);
+            drawRect({
+                width: 32,
+                height: 32,
+                pos: vec2(10, 10 + (32 + 5) * 4),
+                color: selectedColor,
+                outline: { color: BLACK, width: 2 },
+            });
             return;
         }
 
