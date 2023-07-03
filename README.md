@@ -2,6 +2,13 @@
 
 > Conway's game of life but with colors.
 
+## Screenshots
+
+![](screenshots/default.png)
+![](screenshots/game.png)
+![](screenshots/kirby.png)
+![](screenshots/noel.png)
+
 ## Principle
 
 This game follows Conway's game of life rules, but it allows you to draw what you want (with several colors) before launching the simulation.
