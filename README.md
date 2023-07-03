@@ -2,13 +2,6 @@
 
 > Conway's game of life but with colors.
 
-## Screenshots
-
-![](screenshots/default.png)
-![](screenshots/game.png)
-![](screenshots/kirby.png)
-![](screenshots/noel.png)
-
 ## Principle
 
 This game follows Conway's game of life rules, but it allows you to draw what you want (with several colors) before launching the simulation.
@@ -23,3 +16,10 @@ Also, I wanted to learn [kaboomjs](kaboomjs.org) in a practical way.
 You need a static server to use game assets. Type `python3 -m http.server` and follow the link.
 
 If you use uMatrix, you have to allow *unpkg.com* domain, which hosts kaboomjs source code.
+
+## Screenshots
+
+![](screenshots/default.png)
+![](screenshots/game.png)
+![](screenshots/kirby.png)
+![](screenshots/noel.png)
