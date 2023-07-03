@@ -63,7 +63,7 @@ function gameScene(numberOfHorizontalLines, numberOfVerticalLines, cells, cursor
     const backButtonRect = new Rect(vec2(10, 32), 32, 32);
 
     onUpdate(() => {
-        if (isKeyPressed("escape") || (isTouchScreen() && testRectPoint(backButtonRect, mousePos()) && isMousePressed())) {
+        if (isKeyPressed("escape") || (isTouchscreen() && testRectPoint(backButtonRect, mousePos()) && isMousePressed())) {
             go("editor", numberOfHorizontalLines, numberOfVerticalLines, cellSize, initialCells, cursorColor);
         }
 
@@ -89,7 +89,7 @@ function gameScene(numberOfHorizontalLines, numberOfVerticalLines, cells, cursor
 
         drawCells(cells);
 
-        if (!isTouchScreen()) {
+        if (!isTouchscreen()) {
             drawSprite({
                 sprite: "cursor",
                 pos: mousePos(),

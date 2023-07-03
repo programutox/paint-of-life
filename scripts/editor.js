@@ -152,7 +152,7 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
     onUpdate(() => {
         setCursor("none");
 
-        if (!isTouchScreen()) {
+        if (!isTouchscreen()) {
             updateKeys();
             updateCursorColor();
             updateCells(cells, selectedColor);
@@ -197,7 +197,7 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
     });
 
     const instructions = {};
-    if (isTouchScreen()) {
+    if (isTouchscreen()) {
         instructions["buttonsInfo"] = getButtonsInfo();
     } else {
         instructions["texts"] = getInstructionsTexts();
@@ -205,7 +205,7 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
 
     const instruction_size = 20;
     const drawCursor = () => { 
-        if (!isTouchScreen()) { 
+        if (!isTouchscreen()) { 
             drawSprite({
                 sprite: "cursor",
                 pos: mousePos(),
@@ -228,7 +228,7 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
         drawCells(cells);
 
         if (!showInfo) {
-            if (isTouchScreen()) {
+            if (isTouchscreen()) {
                 const buttonInfo = instructions.buttonsInfo[0];
                 drawButton(buttonInfo)
             }
@@ -236,7 +236,7 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
             return;
         }
 
-        if (isTouchScreen()) {
+        if (isTouchscreen()) {
             instructions.buttonsInfo.forEach(drawButton);
             drawRect({
                 width: 32,
