@@ -217,6 +217,9 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
         scale: 2,
     });
 
+    const instructionsRectWidth = (cellSize + 1) * 28 - 1;
+    const instructionsRectHeight = (cellSize + 1) * 9;
+
     onDraw(() => {
         drawHorizontalLines(numberOfHorizontalLines, cellSize);
         drawVerticalLines(numberOfVerticalLines, cellSize);
@@ -244,12 +247,9 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
             return;
         }
 
-        const width = (cellSize + 1) * 28;
-        const height = (cellSize + 1) * 9;
-
         drawRect({
-            width,
-            height,
+            width: instructionsRectWidth,
+            height: instructionsRectHeight,
             color: Color.fromHex(0x3A4454),
         });
 
