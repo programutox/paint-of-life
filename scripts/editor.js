@@ -165,31 +165,33 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
             buttonInfo => testRectPoint(buttonInfo.rect, mousePos()) && isMousePressed()
         );
         
-        if (button !== undefined) {
-            console.log(`a button has been pressed: ${button.tag}`);
-            switch (button.tag) {
-                case "text":
-                    showInfo = !showInfo;
-                    break;
-                
-                case "erase":
-                    cells = initializeCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize);
-                    break;
-                
-                case "color":
-                    let index = colors.findIndex(color => areColorsEqual(color, selectedColor));
-                    index = index === colors.length - 1 ? 0 : index + 1;
-                    selectedColor = colors[index];
-                    break;
-                
-                case "start":
-                    launchGame();
-                    break;
-            
-                default:
-                    throw RangeError(`The button tag "${button.tag}" is not handled.`);
-            }
+        if (button === undefined) {
+            updateCursorColor();
+            updateCells(cells, selectedColor);
             return;
+        }
+
+        switch (button.tag) {
+            case "text":
+                showInfo = !showInfo;
+                break;
+            
+            case "erase":
+                cells = initializeCells(numberOfHorizontalLines, numberOfVerticalLines, cellSize);
+                break;
+            
+            case "color":
+                let index = colors.findIndex(color => areColorsEqual(color, selectedColor));
+                index = index === colors.length - 1 ? 0 : index + 1;
+                selectedColor = colors[index];
+                break;
+            
+            case "start":
+                launchGame();
+                break;
+        
+            default:
+                throw RangeError(`The button tag "${button.tag}" is not handled.`);
         }
 
         updateCursorColor();
