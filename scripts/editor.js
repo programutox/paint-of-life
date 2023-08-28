@@ -32,8 +32,6 @@ function initializeCells(numberOfHorizontalLines, numberOfVerticalLines, cellSiz
     for (let i = 0; i <= numberOfVerticalLines; ++i) {
         let row = [];
         for (let j = 0; j <= numberOfHorizontalLines; ++j) {
-            // vec2 and rgb functions cannot be used. 
-            // Because of serialization, structured behaves strangely.
             row.push({
                 alive: false,
                 x: i * (cellSize + 1) - 1,
