@@ -106,7 +106,7 @@ function drawCells(cells) {
     const drawCell = cell => drawRect({
         width: cell.size,
         height: cell.size,
-        pos: vec2(cell.x, cell.y),
+        pos: vec2(cell.x + 0.5, cell.y - 0.5),
         color: rgb(cell.r, cell.g, cell.b),
     });
     
