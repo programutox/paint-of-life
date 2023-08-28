@@ -203,7 +203,7 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
         instructions["texts"] = getInstructionsTexts();
     }
 
-    const instruction_size = 20;
+    const instructionSize = 20;
     const drawCursor = () => { 
         if (!isTouchscreen()) { 
             drawSprite({
@@ -248,12 +248,21 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
             return;
         }
 
+        const width = (cellSize + 1) * 28;
+        const height = (cellSize + 1) * 9;
+
+        drawRect({
+            width,
+            height,
+            color: Color.fromHex(0x3A4454),
+        });
+
         instructions.texts.forEach((value, i) => {
             drawText({
                 text: value,
-                size: instruction_size,
-                pos: vec2(10, 10 + (instruction_size + 5) * i),
-                color: BLACK,
+                size: instructionSize,
+                pos: vec2(10, 10 + (instructionSize + 5) * i),
+                color: Color.fromHex(0xF5DDDD),
             });
         });
 
