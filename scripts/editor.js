@@ -48,10 +48,6 @@ function initializeCells(numberOfHorizontalLines, numberOfVerticalLines, cellSiz
     return cells;
 }
 
-function areColorsEqual(color1, color2) {
-    return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b;
-}
-
 function updateCells(cells, selectedColor) {
     const cellRect = cell => new Rect(vec2(cell.x, cell.y), cell.size, cell.size);
 
@@ -64,7 +60,7 @@ function updateCells(cells, selectedColor) {
 
         const cellColor = rgb(cell.r, cell.g, cell.b);
 
-        if (isMouseDown("left") && !(cell.alive && areColorsEqual(cellColor, selectedColor))) {
+        if (isMouseDown("left") && !(cell.alive && cellColor.eq(selectedColor))) {
             cell.r = selectedColor.r;
             cell.g = selectedColor.g;
             cell.b = selectedColor.b;
@@ -179,7 +175,7 @@ function editorScene(numberOfHorizontalLines, numberOfVerticalLines, cellSize, i
                 break;
             
             case "color":
-                let index = colors.findIndex(color => areColorsEqual(color, selectedColor));
+                let index = colors.findIndex(color => color.eq(selectedColor));
                 index = index === colors.length - 1 ? 0 : index + 1;
                 selectedColor = colors[index];
                 break;
